@@ -1,28 +1,30 @@
 ---
-title: "assignment_1_Rmd"
+title: "P8130 Assignment 1"
 author: "Emil Hafeez (eh2928)"
 date: "9/18/2020"
 output: pdf_document
 ---
 
-#Assignment 1
-Assignment 1 for Biostatistics P8130, using a dataset callled Antibodies, practices data manipulation and descriptive statistics (including table, histogram, and boxplot generation). The dataset contains information on demographic variables, IgM antibodies, and self-reported smell loss for patients diagnosed with COVID-19 (via the PCR gold-standard). 
+Assignment 1 for Biostatistics P8130, using a dataset called Antibodies, practices data manipulation and descriptive statistics (including table, histogram, and boxplot generation). The dataset contains information on demographic variables, IgM antibodies, and self-reported smell loss for patients diagnosed with COVID-19 (via the PCR gold-standard). 
 
 Let's load the appropriate packages first.
-```{r, results ='hide'}
+```{r, echo = TRUE, results ='hide', message = FALSE}
 library(arsenal)
 library(dplyr)
 library(ggplot2)
 library(tidyverse)
 ```
+opts_chunk$set(tidy.opts=list(width.cutoff=80),tidy=TRUE)
 
-##Question 1
+# Question 1
+## Question 1, Part 1, Section a)
 First, read the CSV and examine the basics.
 ```{r}
 #Read the CSV data into a dataframe
 antibodies_df <- read.csv("/Users/emilhafeez/Google Drive/Columbia/Fall 2020/Classes/Biostatistics 1/Assignments/Assignment 1/p8130_biostats_assignment_1/Antibodies.csv")
-
-#Examine basics of the data, to get to know it
+```
+I examine the basics of the data, to become familiar. Results are hidden for the sake of brevity.
+```{r, results='hide'}
 names(antibodies_df)
 nrow(antibodies_df)
 ncol(antibodies_df)
@@ -31,24 +33,26 @@ tail(antibodies_df)
 anyNA(antibodies_df)
 str(antibodies_df)
 ```
-Now, we can provide descriptive statistics for all variables of interest.
-
-```{r}
-# A more condensed way to obtain summary statistics
+Now, we can provide descriptive statistics for all variables of interest. We can see that some variable types need manipulation, too. I suppress the code output here. 
+```{r, results = 'hide'}
 summary(antibodies_df)
 
-# Use function tableby() from library 'arsenal' to create a summary table (called Table 1 in publications)
-# Use continuous and categorical variables
-
-# First table - not ideal
-table_1 <- tableby( ~ AgeCategory + Antibody_IgM + Smell + Gender, data = antibodies_df)
-summary(table_1)
-
-
-# Change variable names/labels
+#Make AgeCategory, Smell, and Gender to show N (%). Requires ensuring all unique values, too.
+unique(antibodies_df$AgeCategory)
+    antibodies_df <- antibodies_df %>% 
+        mutate(AgeCategory = factor(AgeCategory, labels = c("18-30", "31-50", "51+") ))
+unique(antibodies_df$Smell)
+    antibodies_df <- antibodies_df %>% 
+        mutate(Smell = factor(Smell, labels = c("Normal","Altered", "Other")))
+unique(antibodies_df$Gender)
+    antibodies_df <- antibodies_df %>% 
+        mutate(Gender = factor(Gender, labels = c("Male","Female")))
+```
+```{r}
+#To prepare a tidy table, let's change variable names/labels by creating a my_labels variable that will modify the tableby() command
 my_labels <- list(AgeCategory = "Age Range (Years)", Antibody_IgM = "Antibody Levels(IgM)", Smell = "Smell Changes (Self Report)", Gender = "Gender (M/F)")
 
-# Clean the output
+#Clean the output by creating a my_controls variable that will modify the tableby() command
 my_controls <- tableby.control(
                total = TRUE,
                test = FALSE,
@@ -61,19 +65,22 @@ my_controls <- tableby.control(
                Nmiss2 = "Missing",
                countpct = "N (%)"))
 
-# Make 'smoke' a factor to show N (%)
-antibodies_df <- antibodies_df %>% 
-          mutate(Subject = factor(Subject)) # Start labeling with 0 (increasing and alphabetical order)
-
-
-# Second table
-table_1 <- tableby( ~ AgeCategory + Antibody_IgM + Smell + Gender, data = antibodies_df control=my_controls)
-summary(tab2, title = "Descriptive Statistics: Lowbirth Data", labelTranslations = my_labels, text=T)
-
-# Tabulation by race categories
-tab3 <- tableby( race ~ age + bwt + smoke, data=birth_df, control=my_controls)
-summary(tab3, title = "Descriptive Statistics: Lowbirth Data", labelTranslations = my_labels, text=T)
-
+#Making a table
+table_1 <- tableby( ~ AgeCategory + Antibody_IgM + Smell + Gender, data = antibodies_df, control = my_controls)
+summary(table_1, title = "Descriptive Statistics: Antibodies & Smell Data", labelTranslations = my_labels, text = TRUE)
 ```
+```{r}
+table_1
+```
+### Question 1, Part 1, Section b)
+asdasdasdasdasdasdadksflaskdmflaskmdflaksdmflkasmdflkmasldkmfasdasdasdasdasdasdadksflaskdmflaskmdflaksdmflkasmdflkmasldkmfasdasdasdasdasdasdadksflaskdmflaskmdflaksdmflkasmdflkmasldkmfasdasdasdasdasdasdadksflaskdmflaskmdflaksdmflkasmdflkmasldkmfasdasdasdasdasdasdadksflaskdmflaskmdflaksdmflkasmdflkmasldkmf
+
+## Question 1, Part 2, Section a)
+Let's display the descriptive statistics for all variables, this time stratified by Smell category
+```{r}
+table_2 <- tableby( Smell ~ AgeCategory + Antibody_IgM + Smell + Gender, data = antibodies_df, control = my_controls)
+summary(table_2, title = "Descriptive Statistics: Antibodies & Smell Data", labelTranslations = my_labels, text = TRUE)
+```
+
 
 
