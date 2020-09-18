@@ -17,5 +17,63 @@ library(tidyverse)
 ```
 
 ##Question 1
+First, read the CSV and examine the basics.
+```{r}
+#Read the CSV data into a dataframe
+antibodies_df <- read.csv("/Users/emilhafeez/Google Drive/Columbia/Fall 2020/Classes/Biostatistics 1/Assignments/Assignment 1/p8130_biostats_assignment_1/Antibodies.csv")
+
+#Examine basics of the data, to get to know it
+names(antibodies_df)
+nrow(antibodies_df)
+ncol(antibodies_df)
+head(antibodies_df)
+tail(antibodies_df)
+anyNA(antibodies_df)
+str(antibodies_df)
+```
+Now, we can provide descriptive statistics for all variables of interest.
+
+```{r}
+# A more condensed way to obtain summary statistics
+summary(antibodies_df)
+
+# Use function tableby() from library 'arsenal' to create a summary table (called Table 1 in publications)
+# Use continuous and categorical variables
+
+# First table - not ideal
+table_1 <- tableby( ~ AgeCategory + Antibody_IgM + Smell + Gender, data = antibodies_df)
+summary(table_1)
+
+
+# Change variable names/labels
+my_labels <- list(AgeCategory = "Age Range (Years)", Antibody_IgM = "Antibody Levels(IgM)", Smell = "Smell Changes (Self Report)", Gender = "Gender (M/F)")
+
+# Clean the output
+my_controls <- tableby.control(
+               total = TRUE,
+               test = FALSE,
+               numeric.stats = c("meansd", "medianq1q3", "range", "Nmiss2"),
+               cat.stats = c("countpct", "Nmiss2"),
+               stats.labels = list(
+               meansd = "Mean (SD)",
+               medianq1q3 = "Median (Q1, Q3)",
+               range = "Min - Max",
+               Nmiss2 = "Missing",
+               countpct = "N (%)"))
+
+# Make 'smoke' a factor to show N (%)
+antibodies_df <- antibodies_df %>% 
+          mutate(Subject = factor(Subject)) # Start labeling with 0 (increasing and alphabetical order)
+
+
+# Second table
+table_1 <- tableby( ~ AgeCategory + Antibody_IgM + Smell + Gender, data = antibodies_df control=my_controls)
+summary(tab2, title = "Descriptive Statistics: Lowbirth Data", labelTranslations = my_labels, text=T)
+
+# Tabulation by race categories
+tab3 <- tableby( race ~ age + bwt + smoke, data=birth_df, control=my_controls)
+summary(tab3, title = "Descriptive Statistics: Lowbirth Data", labelTranslations = my_labels, text=T)
+
+```
 
 
