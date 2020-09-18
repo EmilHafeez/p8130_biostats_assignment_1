@@ -4,7 +4,7 @@ author: "Emil Hafeez (eh2928)"
 date: "9/18/2020"
 output: pdf_document
 ---
-
+############NOTE THAT YOU COULD MAYBE CHANGE THE LINE LENGTH https://bookdown.org/yihui/rmarkdown-cookbook/text-width.html
 Assignment 1 for Biostatistics P8130, using a dataset called Antibodies, practices data manipulation and descriptive statistics (including table, histogram, and boxplot generation). The dataset contains information on demographic variables, IgM antibodies, and self-reported smell loss for patients diagnosed with COVID-19 (via the PCR gold-standard). 
 
 Let's load the appropriate packages first.
@@ -13,8 +13,9 @@ library(arsenal)
 library(dplyr)
 library(ggplot2)
 library(tidyverse)
+library(knitr)
 ```
-opts_chunk$set(tidy.opts=list(width.cutoff=80),tidy=TRUE)
+```
 
 # Question 1
 ## Question 1, Part 1, Section a)
@@ -73,7 +74,18 @@ summary(table_1, title = "Descriptive Statistics: Antibodies & Smell Data", labe
 table_1
 ```
 ### Question 1, Part 1, Section b)
-asdasdasdasdasdasdadksflaskdmflaskmdflaksdmflkasmdflkmasldkmfasdasdasdasdasdasdadksflaskdmflaskmdflaksdmflkasmdflkmasldkmfasdasdasdasdasdasdadksflaskdmflaskmdflaksdmflkasmdflkmasldkmfasdasdasdasdasdasdadksflaskdmflaskmdflaksdmflkasmdflkmasldkmfasdasdasdasdasdasdadksflaskdmflaskmdflaksdmflkasmdflkmasldkmf
+```{r}
+#1.0475
+min(antibodies_df$Antibody_IgM)
+#0.0480
+
+ggplot(antibodies_df, aes(Antibody_IgM)) +
+  geom_histogram(col = "black", fill = "red", breaks = seq(0.0400,1.05,.01)) +
+  geom_vline(aes(xintercept = mean(Antibody_IgM, na.rm = TRUE)), color = "blue", linetype = "dashed", size = 1) +
+  labs(title = "Histogram of Antibody Count") + 
+  labs(x = "Antibody Count (IgM(", y = "Frequency")
+```
+The histogram seems to show a strong positive skew (right skew). The distribution appears to to have higher frequencies of antibody counts closer to the minimum of 0.0480. The mean antibody count of approximately 0.1239 is higher than the median of 0.0915 in this distribution.
 
 ## Question 1, Part 2, Section a)
 Let's display the descriptive statistics for all variables, this time stratified by Smell category
@@ -81,6 +93,14 @@ Let's display the descriptive statistics for all variables, this time stratified
 table_2 <- tableby( Smell ~ AgeCategory + Antibody_IgM + Smell + Gender, data = antibodies_df, control = my_controls)
 summary(table_2, title = "Descriptive Statistics: Antibodies & Smell Data", labelTranslations = my_labels, text = TRUE)
 ```
-
+## Question 1, Part 2, Section b)
+```{r}
+ggplot(antibodies_df, aes(x = Antibody_IgM, fill = factor(Smell)) +
+  geom_histogram((binwidth=.5, alpha=.5, position="identity", col = "black", fill = "red", breaks = seq(0.0400,1.05,.01)) +
+    geom_vline(aes(xintercept=mean(Antibody_IgM, na.rm = TRUE)), color = "red", size = 1) +
+  labs(title="Overlaid Histograms of Antibody Count by Smell Category") +                                             
+  labs(x="Antibody Count(IgM)", y="Count") + 
+  scale_fill_discrete(name = "Smell Category", labels = c("Normal", "Altered", "Other"))
+```
 
 
