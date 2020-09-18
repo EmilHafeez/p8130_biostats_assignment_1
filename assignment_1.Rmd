@@ -95,12 +95,14 @@ summary(table_2, title = "Descriptive Statistics: Antibodies & Smell Data", labe
 ```
 ## Question 1, Part 2, Section b)
 ```{r}
-ggplot(antibodies_df, aes(x = Antibody_IgM, fill = factor(Smell)) +
-  geom_histogram((binwidth=.5, alpha=.5, position="identity", col = "black", fill = "red", breaks = seq(0.0400,1.05,.01)) +
-    geom_vline(aes(xintercept=mean(Antibody_IgM, na.rm = TRUE)), color = "red", size = 1) +
-  labs(title="Overlaid Histograms of Antibody Count by Smell Category") +                                             
-  labs(x="Antibody Count(IgM)", y="Count") + 
-  scale_fill_discrete(name = "Smell Category", labels = c("Normal", "Altered", "Other"))
+ggplot(antibodies_df, aes(x = Antibody_IgM, fill = factor(Smell))) +
+  geom_histogram(binwidth = .5, alpha = .5, position = "identity", col = "black", breaks = seq(0.0400,1.05,.1)) +
+  geom_vline(aes(xintercept = mean(Antibody_IgM, na.rm=TRUE)), color = "red", size = 1.5) +
+  labs(title="Overlaid Histograms of Antibody Count by Smell Category") +
+  labs(x = "Antibody Count(IgM)", y = "Count") +
+  scale_fill_discrete(name = "Smoking Status", labels = c("No", "Yes"))
 ```
+
+
 
 
