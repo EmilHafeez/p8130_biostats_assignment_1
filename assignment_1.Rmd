@@ -1,0 +1,21 @@
+---
+title: "assignment_1_Rmd"
+author: "Emil Hafeez (eh2928)"
+date: "9/18/2020"
+output: pdf_document
+---
+
+#Assignment 1
+Assignment 1 for Biostatistics P8130, using a dataset callled Antibodies, practices data manipulation and descriptive statistics (including table, histogram, and boxplot generation). The dataset contains information on demographic variables, IgM antibodies, and self-reported smell loss for patients diagnosed with COVID-19 (via the PCR gold-standard). 
+
+Let's load the appropriate packages first.
+```{r, results ='hide'}
+library(arsenal)
+library(dplyr)
+library(ggplot2)
+library(tidyverse)
+```
+
+##Question 1
+
+
