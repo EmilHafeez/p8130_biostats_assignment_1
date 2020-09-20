@@ -2,9 +2,10 @@
 title: "P8130 Assignment 1"
 author: "Emil Hafeez (eh2928)"
 date: "9/18/2020"
-output: pdf_document
+output: html_document
 ---
-############NOTE THAT YOU COULD MAYBE CHANGE THE LINE LENGTH https://bookdown.org/yihui/rmarkdown-cookbook/text-width.html
+DONT FORGET TO COMMENT ON last overlaid plots!   
+
 Assignment 1 for Biostatistics P8130, using a dataset called Antibodies, practices data manipulation and descriptive statistics (including table, histogram, and boxplot generation). The dataset contains information on demographic variables, IgM antibodies, and self-reported smell loss for patients diagnosed with COVID-19 (via the PCR gold-standard). 
 
 Let's load the appropriate packages first.
@@ -23,6 +24,8 @@ First, read the CSV and examine the basics.
 ```{r}
 #Read the CSV data into a dataframe
 antibodies_df <- read.csv("/Users/emilhafeez/Google Drive/Columbia/Fall 2020/Classes/Biostatistics 1/Assignments/Assignment 1/p8130_biostats_assignment_1/Antibodies.csv")
+
+
 ```
 I examine the basics of the data, to become familiar. Results are hidden for the sake of brevity.
 ```{r, results='hide'}
@@ -90,19 +93,35 @@ The histogram seems to show a strong positive skew (right skew). The distributio
 ## Question 1, Part 2, Section a)
 Let's display the descriptive statistics for all variables, this time stratified by Smell category
 ```{r}
+#Similar structure to the above code, though note that Smell appears as a stratifier before the '~'
 table_2 <- tableby( Smell ~ AgeCategory + Antibody_IgM + Smell + Gender, data = antibodies_df, control = my_controls)
 summary(table_2, title = "Descriptive Statistics: Antibodies & Smell Data", labelTranslations = my_labels, text = TRUE)
 ```
 ## Question 1, Part 2, Section b)
-```{r}
+```{r, warning = FALSE}
+# Generate overlaid histograms and boxplots with a variety of formatting edits, including aesthetic and labeling.
+# Histogram
 ggplot(antibodies_df, aes(x = Antibody_IgM, fill = factor(Smell))) +
   geom_histogram(binwidth = .5, alpha = .5, position = "identity", col = "black", breaks = seq(0.0400,1.05,.1)) +
-  geom_vline(aes(xintercept = mean(Antibody_IgM, na.rm=TRUE)), color = "red", size = 1.5) +
-  labs(title="Overlaid Histograms of Antibody Count by Smell Category") +
+  geom_vline(aes(xintercept = mean(Antibody_IgM, na.rm = TRUE)), color = "red", size = 1.5) +
+  labs(title = "Overlaid Histograms of Antibody Count by Smell Category") +
   labs(x = "Antibody Count(IgM)", y = "Count") +
-  scale_fill_discrete(name = "Smoking Status", labels = c("No", "Yes"))
+  scale_fill_discrete(name = "Smell Variation", labels = c("Normal", "Altered", "Other"))
+# Boxplot 
+ggplot(antibodies_df, aes(x = Smell, y = Antibody_IgM, fill = Smell)) +
+  geom_boxplot(outlier.colour = "black", outlier.shape = 16,
+               outlier.size = 2, notch = FALSE) +
+  scale_fill_manual(values = c("blue", "red", "yellow"),
+                    labels = expression("Normal", "Altered", "Other")) +
+  xlab("") +
+  ylab("Antibody Count (IgM)") +
+  theme(legend.position = "top", legend.title = element_blank())
 ```
+Utilizing these overlaid histograms and boxplots, we can see that while both the Smell categories of Normal and Altered appear to show a positive (right) skew in their distributions of Antibody Count (IgM), with long tails extending to the right (or up, in the boxplots) and a substantial number of outliers. 
+However, it does appear that the Normal category has higher variation, including a larger interquartile range than the Altered group, as well as more extreme outliers. These groups do have overlapping boxplots, though. The Other category, a small portion of the dataset, overlaps with the IQR of the other two categories.
 
+# Question 2
+## Question 2, Summary and Three Focus Points
 
 
 
