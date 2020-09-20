@@ -4,7 +4,6 @@ author: "Emil Hafeez (eh2928)"
 date: "9/18/2020"
 output: html_document
 ---
-DONT FORGET TO COMMENT ON last overlaid plots!   
 
 Assignment 1 for Biostatistics P8130, using a dataset called Antibodies, practices data manipulation and descriptive statistics (including table, histogram, and boxplot generation). The dataset contains information on demographic variables, IgM antibodies, and self-reported smell loss for patients diagnosed with COVID-19 (via the PCR gold-standard). 
 
@@ -16,10 +15,9 @@ library(ggplot2)
 library(tidyverse)
 library(knitr)
 ```
-```
-
 # Question 1
 ## Question 1, Part 1, Section a)
+```
 First, read the CSV and examine the basics.
 ```{r, results = 'hide'}
 #Read the CSV data into a dataframe
@@ -39,22 +37,23 @@ Now, we can provide descriptive statistics for all variables of interest. We can
 ```{r, results = 'hide'}
 summary(antibodies_df)
 
-#Make AgeCategory, Smell, and Gender to show N (%). Requires ensuring all unique values, too.
+# Make AgeCategory, Smell, and Gender appopriate datatypes. Helps to ensure we know all unique values, too.
 unique(antibodies_df$AgeCategory)
     antibodies_df <- antibodies_df %>% 
         mutate(AgeCategory = factor(AgeCategory, labels = c("18-30", "31-50", "51+") ))
 unique(antibodies_df$Smell)
     antibodies_df <- antibodies_df %>% 
-        mutate(Smell = factor(Smell, labels = c("Normal","Altered", "Other")))
+        mutate(Smell = factor(Smell, levels = c("Normal","Altered", "Unanswered/Others")))
+    antibodies_df = antibodies_df %>% filter(Smell != "Unanswered/Others")
 unique(antibodies_df$Gender)
     antibodies_df <- antibodies_df %>% 
-        mutate(Gender = factor(Gender, labels = c("Male","Female")))
+        mutate(Gender = factor(Gender, levels = c("Male","Female")))
 ```
 ```{r}
-#To prepare a tidy table, let's change variable names/labels by creating a my_labels variable that will modify the tableby() command
-my_labels <- list(AgeCategory = "Age Range (Years)", Antibody_IgM = "Antibody Levels(IgM)", Smell = "Smell Changes (Self Report)", Gender = "Gender (M/F)")
+# To prepare a tidy table, let's change variable names/labels by creating a my_labels variable that will modify the tableby() command
+my_labels <- list(AgeCategory = "Age Range (Years)", Antibody_IgM = "Antibody Levels(IgM)", Smell = "Smell Changes (Filtered to Binary)", Gender = "Gender (M/F)")
 
-#Clean the output by creating a my_controls variable that will modify the tableby() command
+# Clean the output by creating a my_controls variable that will modify the tableby() command
 my_controls <- tableby.control(
                total = TRUE,
                test = FALSE,
@@ -69,9 +68,9 @@ my_controls <- tableby.control(
 ```
 
 ```{r}
-#Making a table
+#Making Table 1
 table_1 <- tableby( ~ AgeCategory + Antibody_IgM + Smell + Gender, data = antibodies_df, control = my_controls)
-summary(table_1, title = "Descriptive Statistics: Antibodies & Smell Data", labelTranslations = my_labels, text = TRUE)
+summary(table_1, title = "Table 1 Descriptive Statistics: Antibodies & Smell Data", labelTranslations = my_labels, text = TRUE)
 ```
 
 ### Question 1, Part 1, Section b)
@@ -86,6 +85,7 @@ ggplot(antibodies_df, aes(Antibody_IgM)) +
   labs(title = "Histogram of Antibody Count") + 
   labs(x = "Antibody Count (IgM(", y = "Frequency")
 ```
+
 The histogram seems to show a strong positive skew (right skew). The distribution appears to to have higher frequencies of antibody counts closer to the minimum of 0.0480. The mean antibody count of approximately 0.1239 is higher than the median of 0.0915 in this distribution.
 
 ## Question 1, Part 2, Section a)
@@ -115,11 +115,15 @@ ggplot(antibodies_df, aes(x = Smell, y = Antibody_IgM, fill = Smell)) +
   ylab("Antibody Count (IgM)") +
   theme(legend.position = "top", legend.title = element_blank())
 ```
-Utilizing these overlaid histograms and boxplots, we can see that while both the Smell categories of Normal and Altered appear to show a positive (right) skew in their distributions of Antibody Count (IgM), with long tails extending to the right (or up, in the boxplots) and a substantial number of outliers. 
-However, it does appear that the Normal category has higher variation, including a larger interquartile range than the Altered group, as well as more extreme outliers. These groups do have overlapping boxplots, though. The Other category, a small portion of the dataset, overlaps with the IQR of the other two categories.
+
+Utilizing these overlaid histograms and boxplots, we can see that both the Smell categories of Normal and Altered appear to show a positive (right) skew in their distributions of Antibody Count (IgM), with long tails extending to the right (or up, in the boxplots) and a substantial number of outliers. Most data appear to fall in a similar range, with substantial overlap between the box plots; however, it does appear that the Normal category has lower variation, including a smaller interquartile range than the Altered group, as well as more condensed outliers.
 
 # Question 2
 ## Question 2, Summary and Three Focus Points
 
-
-
+    A recent CNN article (Fox, 2020) focuses on the story of a probable index COVID-19 case in an outbreak suspected (and then linked) to Flight VN54 from London to Hanoi on March 2nd, 2020. It cites an early release study in the journal Emerging Infectious Diseases from Vietnam’s National Institute of Hygiene and Epidemiology; the observational study seeks primarily to assess the role of in-flight SARS-CoV-2 transmission by investigating and tracing cases among passengers (Khanh et al., 2020). 
+    The study sample was self-selected, in that it was limited to the people on flight VN54 on March 2nd from London to Hanoi (and their contacts upon landing). 217 airline crew and passengers were traced, tested via PCR, and interviewed.  Additionally, 33 people (16%) had left Vietnam and were unable to be included (and it is possible that these people may systematically different from people who were included in the analysis, in a way relevant to the outcome). Finally, while investigation included other potential infection contexts, without genomic analysis the authors are unable to rule out alternatives (such as fomites) to suspected in-flight infection.  
+    Regarding the CNN article, the facts are presented in a truncated narrative and sensationalized way. Phrases like "The investigators said there was no other likely way any of the 15 others could have been infected other than exposure to the sick patient on the flight," ring false, given the Discussion section in the study publication contradicts this. A related Forbes article provides a more balanced approach, and even mentions some limitations of the study. However, all reporting urges caution about long flights, which is prudent.
+    The generalizability of the study plays an important role in understanding how seriously one ought to take the results in relation to its findings. The study finds that Flight VN54 was an important context for COVID-19 spread; people more proximal to the index case had much higher attack rates, and even people farther away seem to have been infected by aerosolized particles. However, this was conducted before wearing masks was instituted on flights and in airports, so this pattern may or may not take the same form under more recent conditions. 
+1.	Fox, Maggie. Coronavirus can spread on airline flights, two studies show. CNN, Cable News Network, 18 Sept. 2020 [cited 19 September 2020]. www.cnn.com/2020/09/18/health/coronavirus-airline-transmission-studies/index.html. 
+2.	Khanh NC, Thai PQ, Quach H-L, Thi NA-H, Dinh PC, Duong TN, et al. Transmission of severe acute respiratory syndrome coronavirus 2 during long flight. Emerg Infect Dis. 2020 Nov [cited 19 September 2020]. https://doi.org/10.3201/eid2611.203299
