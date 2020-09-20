@@ -9,7 +9,7 @@ DONT FORGET TO COMMENT ON last overlaid plots!
 Assignment 1 for Biostatistics P8130, using a dataset called Antibodies, practices data manipulation and descriptive statistics (including table, histogram, and boxplot generation). The dataset contains information on demographic variables, IgM antibodies, and self-reported smell loss for patients diagnosed with COVID-19 (via the PCR gold-standard). 
 
 Let's load the appropriate packages first.
-```{r, echo = TRUE, results ='hide', message = FALSE}
+```{r, echo = TRUE, results = 'hide', message = FALSE}
 library(arsenal)
 library(dplyr)
 library(ggplot2)
@@ -21,11 +21,11 @@ library(knitr)
 # Question 1
 ## Question 1, Part 1, Section a)
 First, read the CSV and examine the basics.
-```{r}
+```{r, results = 'hide'}
 #Read the CSV data into a dataframe
 antibodies_df <- read.csv("/Users/emilhafeez/Google Drive/Columbia/Fall 2020/Classes/Biostatistics 1/Assignments/Assignment 1/p8130_biostats_assignment_1/Antibodies.csv")
 
-
+antibodies_df <- filter(antibodies_df, Smell == 1 | 2)
 ```
 I examine the basics of the data, to become familiar. Results are hidden for the sake of brevity.
 ```{r, results='hide'}
@@ -68,14 +68,14 @@ my_controls <- tableby.control(
                range = "Min - Max",
                Nmiss2 = "Missing",
                countpct = "N (%)"))
+```
 
+```{r}
 #Making a table
 table_1 <- tableby( ~ AgeCategory + Antibody_IgM + Smell + Gender, data = antibodies_df, control = my_controls)
 summary(table_1, title = "Descriptive Statistics: Antibodies & Smell Data", labelTranslations = my_labels, text = TRUE)
 ```
-```{r}
-table_1
-```
+
 ### Question 1, Part 1, Section b)
 ```{r}
 #1.0475
