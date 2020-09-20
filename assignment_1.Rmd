@@ -24,8 +24,6 @@ First, read the CSV and examine the basics.
 ```{r, results = 'hide'}
 #Read the CSV data into a dataframe
 antibodies_df <- read.csv("/Users/emilhafeez/Google Drive/Columbia/Fall 2020/Classes/Biostatistics 1/Assignments/Assignment 1/p8130_biostats_assignment_1/Antibodies.csv")
-
-antibodies_df <- filter(antibodies_df, Smell == 1 | 2)
 ```
 I examine the basics of the data, to become familiar. Results are hidden for the sake of brevity.
 ```{r, results='hide'}
